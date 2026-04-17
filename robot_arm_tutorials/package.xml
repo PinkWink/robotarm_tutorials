@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>robot_arm_tutorials</name>
+  <version>0.1.0</version>
+  <description>MoveIt2 Python 튜토리얼 패키지 - 로봇암 단계별 학습</description>
+  <maintainer email="user@example.com">pw</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>moveit_msgs</depend>
+  <depend>moveit_servo</depend>
+  <depend>shape_msgs</depend>
+  <depend>control_msgs</depend>
+  <depend>action_msgs</depend>
+  <depend>tf_transformations</depend>
+  <depend>tf2_ros</depend>
+  <depend>visualization_msgs</depend>
+  <depend>robot_arm_description</depend>
+  <depend>robot_arm_moveit_config</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

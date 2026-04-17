@@ -1,0 +1,58 @@
+###############################################
+# MoveIt Servo 파라미터 설정
+# robot_arm 6-DOF 로봇암용
+###############################################
+
+# 발행 주기 (~30Hz)
+# 조건: publish_period < max_expected_latency / 3
+publish_period: 0.033
+max_expected_latency: 0.2
+
+# MoveIt 설정
+move_group_name: "manipulator"
+
+# 입력 명령 설정
+command_in_type: "unitless"
+scale:
+  linear: 0.3
+  rotational: 0.5
+  joint: 0.5
+
+incoming_command_timeout: 0.1
+
+# 토픽 설정
+cartesian_command_in_topic: ~/delta_twist_cmds
+joint_command_in_topic: ~/delta_joint_cmds
+joint_topic: /joint_states
+status_topic: ~/status
+command_out_topic: /arm_controller/joint_trajectory
+command_out_type: trajectory_msgs/JointTrajectory
+
+# 출력 설정
+publish_joint_positions: true
+publish_joint_velocities: true
+publish_joint_accelerations: false
+
+# 스무딩
+use_smoothing: true
+smoothing_filter_plugin_name: "online_signal_smoothing::AccelerationLimitedPlugin"
+
+# Planning Scene
+is_primary_planning_scene_monitor: false
+check_octomap_collisions: false
+
+# 충돌 검사
+check_collisions: true
+collision_check_rate: 10.0
+self_collision_proximity_threshold: 0.01
+scene_collision_proximity_threshold: 0.02
+
+# 특이점 설정 (기본값: 10.0 / 30.0 → 조건수 기반, 값이 클수록 허용)
+lower_singularity_threshold: 50.0
+hard_stop_singularity_threshold: 150.0
+leaving_singularity_threshold_multiplier: 2.0
+
+# 조인트 제한
+halt_all_joints_in_joint_mode: true
+halt_all_joints_in_cartesian_mode: true
+joint_limit_margins: [0.1]

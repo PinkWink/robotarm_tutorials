@@ -1,0 +1,43 @@
+<launch>
+  <arg name="use_sim_time" default="true"/>
+
+  <!-- Set Gazebo plugin path for gz_ros2_control -->
+  <set_env name="GZ_SIM_SYSTEM_PLUGIN_PATH" value="/opt/ros/jazzy/lib"/>
+  <set_env name="GZ_SIM_RESOURCE_PATH" value="/opt/ros/jazzy/share"/>
+
+  <!-- Load URDF via xacro -->
+  <let name="urdf_file" value="$(command 'xacro $(find-pkg-share robot_arm_description)/urdf/robot_arm.urdf.xacro')"/>
+
+  <!-- Robot State Publisher -->
+  <node pkg="robot_state_publisher" exec="robot_state_publisher">
+    <param name="robot_description" value="$(var urdf_file)"/>
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+  </node>
+
+  <!-- Launch Gazebo Harmonic -->
+  <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
+    <arg name="gz_args" value="-r empty.sdf"/>
+  </include>
+
+  <!-- Spawn the robot in Gazebo -->
+  <node pkg="ros_gz_sim" exec="create"
+        args="-topic robot_description -name robot_arm -z 0.0"
+        output="screen"/>
+
+  <!-- Clock bridge from Gazebo to ROS -->
+  <node pkg="ros_gz_bridge" exec="parameter_bridge"
+        args="/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"
+        shell="true">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+  </node>
+
+  <!-- Spawn controllers -->
+  <node pkg="controller_manager" exec="spawner"
+        args="joint_state_broadcaster --controller-manager /controller_manager"/>
+
+  <node pkg="controller_manager" exec="spawner"
+        args="arm_controller --controller-manager /controller_manager"/>
+
+  <node pkg="controller_manager" exec="spawner"
+        args="gripper_controller --controller-manager /controller_manager"/>
+</launch>

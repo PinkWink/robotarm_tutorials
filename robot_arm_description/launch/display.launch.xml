@@ -1,0 +1,16 @@
+<launch>
+  <!-- Xacro를 처리하여 URDF 생성 -->
+  <let name="urdf_file" value="$(command 'xacro $(find-pkg-share robot_arm_description)/urdf/robot_arm.urdf.xacro')"/>
+
+  <!-- Robot State Publisher: robot_description 토픽 발행 -->
+  <node pkg="robot_state_publisher" exec="robot_state_publisher">
+    <param name="robot_description" value="$(var urdf_file)"/>
+  </node>
+
+  <!-- Joint State Publisher GUI: 조인트 상태를 GUI 슬라이더로 제어 -->
+  <node pkg="joint_state_publisher_gui" exec="joint_state_publisher_gui"/>
+
+  <!-- RViz2 실행 -->
+  <node pkg="rviz2" exec="rviz2"
+        args="-d $(find-pkg-share robot_arm_description)/rviz/robot_arm.rviz"/>
+</launch>

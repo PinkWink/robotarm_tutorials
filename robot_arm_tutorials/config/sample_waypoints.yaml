@@ -1,0 +1,43 @@
+# 샘플 웨이포인트 파일 (ex12_waypoint_follow 용)
+# 각 웨이포인트는 위치(m)와 방향(rad)으로 정의
+# roll=pi → 그리퍼 아래 방향
+#
+# 주의: 이 로봇의 그리퍼 아래 방향에서 y=±0.10 이상은
+#       자기충돌 영역 (IK 해 없음). y는 ±0.06 이내가 안전.
+
+waypoints:
+  - name: "P1 Start"
+    position: {x: 0.20, y: 0.00, z: 0.38}
+    orientation: {roll: 3.14159, pitch: 0.0, yaw: 0.0}
+    pause_sec: 1.0
+
+  - name: "P2 Right"
+    position: {x: 0.22, y: -0.06, z: 0.32}
+    orientation: {roll: 3.14159, pitch: 0.0, yaw: 0.0}
+    pause_sec: 0.5
+
+  - name: "P3 Low Right"
+    position: {x: 0.22, y: -0.05, z: 0.30}
+    orientation: {roll: 3.14159, pitch: 0.0, yaw: 0.0}
+    pause_sec: 0.5
+
+  - name: "P4 Low Left"
+    position: {x: 0.22, y: 0.05, z: 0.30}
+    orientation: {roll: 3.14159, pitch: 0.0, yaw: 0.0}
+    pause_sec: 0.5
+
+  - name: "P5 Left"
+    position: {x: 0.22, y: 0.06, z: 0.32}
+    orientation: {roll: 3.14159, pitch: 0.0, yaw: 0.0}
+    pause_sec: 0.5
+
+  - name: "P6 Top"
+    position: {x: 0.18, y: 0.00, z: 0.42}
+    orientation: {roll: 3.14159, pitch: 0.0, yaw: 0.0}
+    pause_sec: 1.0
+
+# Cartesian 직선 보간으로 부드럽게 이동할 구간
+smooth_segments:
+  - name: "bottom sweep"
+    start_index: 2
+    end_index: 3

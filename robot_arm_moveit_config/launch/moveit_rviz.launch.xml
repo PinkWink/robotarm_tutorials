@@ -1,0 +1,17 @@
+<launch>
+  <arg name="use_sim_time" default="true"/>
+
+  <!-- Load URDF and SRDF for RViz -->
+  <let name="urdf_file" value="$(command 'xacro $(find-pkg-share robot_arm_description)/urdf/robot_arm.urdf.xacro')"/>
+  <let name="srdf_file" value="$(command 'cat $(find-pkg-share robot_arm_moveit_config)/config/robot_arm.srdf')"/>
+  <let name="kinematics_file" value="$(find-pkg-share robot_arm_moveit_config)/config/kinematics.yaml"/>
+
+  <!-- RViz with MoveIt plugin -->
+  <node pkg="rviz2" exec="rviz2"
+        args="-d $(find-pkg-share robot_arm_moveit_config)/config/moveit.rviz">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+    <param name="robot_description" value="$(var urdf_file)"/>
+    <param name="robot_description_semantic" value="$(var srdf_file)"/>
+    <param from="$(var kinematics_file)"/>
+  </node>
+</launch>

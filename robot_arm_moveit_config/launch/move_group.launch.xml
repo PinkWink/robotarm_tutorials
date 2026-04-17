@@ -1,0 +1,37 @@
+<launch>
+  <arg name="use_sim_time" default="true"/>
+
+  <!-- Load URDF via xacro -->
+  <let name="urdf_file" value="$(command 'xacro $(find-pkg-share robot_arm_description)/urdf/robot_arm.urdf.xacro')"/>
+
+  <!-- Load SRDF -->
+  <let name="srdf_file" value="$(command 'cat $(find-pkg-share robot_arm_moveit_config)/config/robot_arm.srdf')"/>
+
+  <!-- Config file paths -->
+  <let name="kinematics_file" value="$(find-pkg-share robot_arm_moveit_config)/config/kinematics.yaml"/>
+  <let name="joint_limits_file" value="$(find-pkg-share robot_arm_moveit_config)/config/joint_limits.yaml"/>
+  <let name="ompl_planning_file" value="$(find-pkg-share robot_arm_moveit_config)/config/ompl_planning.yaml"/>
+  <let name="moveit_controllers_file" value="$(find-pkg-share robot_arm_moveit_config)/config/moveit_controllers.yaml"/>
+
+  <!-- Robot State Publisher -->
+  <node pkg="robot_state_publisher" exec="robot_state_publisher">
+    <param name="robot_description" value="$(var urdf_file)"/>
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+  </node>
+
+  <!-- MoveIt move_group node -->
+  <node pkg="moveit_ros_move_group" exec="move_group">
+    <param name="use_sim_time" value="$(var use_sim_time)"/>
+    <param name="robot_description" value="$(var urdf_file)"/>
+    <param name="robot_description_semantic" value="$(var srdf_file)"/>
+    <param from="$(var kinematics_file)"/>
+    <param from="$(var joint_limits_file)"/>
+    <param from="$(var ompl_planning_file)"/>
+    <param from="$(var moveit_controllers_file)"/>
+    <param name="planning_scene_monitor.publish_planning_scene" value="true"/>
+    <param name="planning_scene_monitor.publish_geometry_updates" value="true"/>
+    <param name="planning_scene_monitor.publish_state_updates" value="true"/>
+    <param name="planning_scene_monitor.publish_transforms_updates" value="true"/>
+    <param name="moveit_controller_manager" value="moveit_simple_controller_manager/MoveItSimpleControllerManager"/>
+  </node>
+</launch>
