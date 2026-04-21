@@ -13,6 +13,7 @@ setup(
         ('share/' + package_name + '/launch', [
             'launch/tutorial_demo.launch.py',
             'launch/servo_keyboard.launch.py',
+            'launch/ex02_1_moveit_py_named_pose.launch.py',
         ]),
         ('share/' + package_name + '/config', [
             'config/sample_waypoints.yaml',
@@ -42,6 +43,7 @@ setup(
             'ex13_circular_path = robot_arm_tutorials.ex13_circular_path:main',
             'ex14_circular_servo = robot_arm_tutorials.ex14_circular_servo:main',
             'ex15_keyboard_ik = robot_arm_tutorials.ex15_keyboard_ik:main',
+            'ex02_1_moveit_py_named_pose = robot_arm_tutorials.ex02_1_moveit_py_named_pose:main',
         ],
     },
 )

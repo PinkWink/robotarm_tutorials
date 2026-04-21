@@ -1,0 +1,27 @@
+# Claude Code 관련 파일 (커밋 제외)
+CLAUDE.md
+CLAUDE_HISTORY.md
+CLAUDE_*.md
+.claude/
+.claude-*
+**/CLAUDE.md
+**/CLAUDE_HISTORY.md
+**/.claude/
+
+# 편집기
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# ROS2 워크스페이스 산출물 (src 하위에 들어올 일이 있는 경우)
+install/
+log/

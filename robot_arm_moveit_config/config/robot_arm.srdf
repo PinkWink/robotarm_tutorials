@@ -35,11 +35,11 @@
 
   <group_state name="ready" group="manipulator">
     <joint name="joint1" value="0.0"/>
-    <joint name="joint2" value="-0.785"/>
-    <joint name="joint3" value="0.785"/>
-    <joint name="joint4" value="0.0"/>
-    <joint name="joint5" value="0.785"/>
-    <joint name="joint6" value="0.0"/>
+    <joint name="joint2" value="0.051"/>
+    <joint name="joint3" value="0.594"/>
+    <joint name="joint4" value="0.730"/>
+    <joint name="joint5" value="-0.051"/>
+    <joint name="joint6" value="0.323"/>
   </group_state>
 
   <group_state name="open" group="gripper">
