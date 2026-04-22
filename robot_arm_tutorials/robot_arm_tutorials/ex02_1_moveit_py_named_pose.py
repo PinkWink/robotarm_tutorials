@@ -55,7 +55,12 @@ def main():
     # RobotModel / PlanningScene / PlanningComponent 를 구성한다.
     robot = MoveItPy(node_name='moveit_py_named_pose')
     arm = robot.get_planning_component(PLANNING_GROUP)
-    logger.info('MoveItPy 초기화 완료')
+    # MoveItPy 초기화 직후 arm_controller/follow_joint_trajectory action 연결과
+    # joint_states 타임스탬프 수집이 아직 덜 돼 있어, 바로 plan/execute 를 호출하면
+    # 1단계는 'Action client not connected', 2단계는 'allowed_start_tolerance
+    # 초과' 로 실패한다. 두 가지 모두 warm-up 지연으로 해소된다.
+    logger.info('MoveItPy 초기화 완료 — 컨트롤러/상태 monitor warm-up 대기')
+    time.sleep(3.0)
 
     for idx, pose_name in enumerate(POSE_SEQUENCE, start=1):
         logger.info(f'--- {idx}단계: "{pose_name}" 포즈로 이동 ---')
