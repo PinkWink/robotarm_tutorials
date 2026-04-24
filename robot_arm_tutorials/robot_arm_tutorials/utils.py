@@ -146,8 +146,8 @@ class MoveGroupHelper:
             'joint4': 0.0, 'joint5': 0.0, 'joint6': 0.0,
         },
         'ready': {
-            'joint1': 0.0, 'joint2': -0.785, 'joint3': 0.785,
-            'joint4': 0.0, 'joint5': 0.785, 'joint6': 0.0,
+            'joint1': 0.0, 'joint2': 0.051, 'joint3': 0.594,
+            'joint4': 0.730, 'joint5': -0.051, 'joint6': 0.323,
         },
     }
 
