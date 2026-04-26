@@ -698,8 +698,8 @@ class GripperHelper:
     prismatic 조인트(left_finger_joint)를 제어한다.
     """
 
-    GRIPPER_OPEN = 0.02    # 완전 열림 (m)
-    GRIPPER_CLOSED = 0.0   # 완전 닫힘 (m)
+    GRIPPER_OPEN = 0.0     # 완전 열림 (m) — axis(-1,0,0) 기준 손가락이 origin (안쪽 미이동)
+    GRIPPER_CLOSED = 0.02  # 완전 닫힘 (m) — limit max, 손가락이 안쪽으로 최대 이동
     MAX_EFFORT = 10.0      # 최대 힘 (N)
 
     def __init__(self, node: Node):

@@ -33,14 +33,14 @@ class GripperControlDemo(Node):
             return
 
         # 1단계: 그리퍼 열기
-        self.get_logger().info('--- 1단계: 그리퍼 열기 (0.02m) ---')
-        self.get_logger().info('  left_finger_joint = 0.02m (최대 열림)')
+        self.get_logger().info('--- 1단계: 그리퍼 열기 (0.0m) ---')
+        self.get_logger().info('  left_finger_joint = 0.0m (최대 열림)')
         gripper.open_gripper()
         time.sleep(2.0)
 
         # 2단계: 그리퍼 닫기
-        self.get_logger().info('--- 2단계: 그리퍼 닫기 (0.0m) ---')
-        self.get_logger().info('  left_finger_joint = 0.0m (완전 닫힘)')
+        self.get_logger().info('--- 2단계: 그리퍼 닫기 (0.02m) ---')
+        self.get_logger().info('  left_finger_joint = 0.02m (완전 닫힘)')
         gripper.close_gripper()
         time.sleep(2.0)
 
