@@ -47,9 +47,12 @@ collision_check_rate: 10.0
 self_collision_proximity_threshold: 0.01
 scene_collision_proximity_threshold: 0.02
 
-# 특이점 설정 (기본값: 10.0 / 30.0 → 조건수 기반, 값이 클수록 허용)
-lower_singularity_threshold: 50.0
-hard_stop_singularity_threshold: 150.0
+# 특이점 설정 (기본값: ~17 / 30 → Jacobian 조건수 기반, 값이 클수록 허용)
+# 본 로봇은 reach ~0.78m로 작아 J의 translational(m/rad)/rotational(무차원) 단위
+# mismatch 때문에 비특이점 자세에서도 조건수가 자연스럽게 100~수백까지 올라간다.
+# 진짜 특이점에서만 정지하도록 임계치를 충분히 넉넉하게 설정.
+lower_singularity_threshold: 500.0
+hard_stop_singularity_threshold: 2000.0
 leaving_singularity_threshold_multiplier: 2.0
 
 # 조인트 제한
