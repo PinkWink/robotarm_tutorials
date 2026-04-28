@@ -4,15 +4,20 @@
 동일한 목표에 대해 여러 OMPL 플래너를 적용하여
 계획 시간, 성공 여부를 비교하고 경로를 RViz에 시각화하는 예제.
 
+각 플래너 단계는 /next_step 토픽 신호로 진행되며,
+계획된 끝단 경로가 LINE_STRIP 마커로 RViz에 누적 표시된다.
+
 학습 내용:
 - OMPL 플래너 종류와 특성
 - planner_id 파라미터
 - FK(순기구학)를 이용한 궤적 → 끝단 경로 변환
-- RViz Marker로 플래너별 경로 시각화
+- RViz Marker로 플래너별 경로 시각화 (누적 비교)
+- 단계별 사용자 트리거 (/next_step)
 
 실행 방법:
   터미널1: ros2 launch robot_arm_moveit_config demo.launch.xml
   터미널2: ros2 run robot_arm_tutorials ex10_multi_planner --ros-args -p use_sim_time:=true
+  터미널3: ros2 topic pub --once /next_step std_msgs/msg/Empty '{}'
 """
 
 import math
@@ -21,7 +26,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy
 from geometry_msgs.msg import Point, Vector3
-from std_msgs.msg import ColorRGBA
+from std_msgs.msg import ColorRGBA, Empty
 from sensor_msgs.msg import JointState
 from visualization_msgs.msg import Marker, MarkerArray
 from moveit_msgs.srv import GetPositionFK
@@ -53,6 +58,22 @@ class MultiPlannerDemo(Node):
         self._mid = 0
 
         self._fk_client = self.create_client(GetPositionFK, 'compute_fk')
+
+        # 사용자 트리거: /next_step 토픽으로 각 단계 진행
+        self._trigger_received = False
+        self._trigger_sub = self.create_subscription(
+            Empty, '/next_step', self._trigger_cb, 10
+        )
+
+    def _trigger_cb(self, _msg):
+        self._trigger_received = True
+
+    def _wait_for_trigger(self, prompt):
+        """/next_step 토픽 메시지가 올 때까지 블로킹 대기"""
+        self.get_logger().info(prompt)
+        self._trigger_received = False
+        while rclpy.ok() and not self._trigger_received:
+            rclpy.spin_once(self, timeout_sec=0.1)
 
     def _republish(self):
         if self._markers.markers:
@@ -185,6 +206,17 @@ class MultiPlannerDemo(Node):
     def run(self):
         arm = MoveGroupHelper(self)
 
+        self.get_logger().info(
+            '[RViz2 안내] 마커를 보려면 MarkerArray Display를 추가하고 '
+            "Topic을 '/planner_paths' 로 설정하세요. "
+            "각 플래너 경로가 다른 색상으로 누적 표시됩니다."
+        )
+        self.get_logger().info(
+            "[단계 진행] 각 플래너는 '/next_step' 토픽 신호로 진행됩니다. "
+            "다른 터미널에서 다음 명령을 실행하세요:\n"
+            "  ros2 topic pub --once /next_step std_msgs/msg/Empty '{}'"
+        )
+
         if not arm.wait_for_servers(timeout_sec=30.0):
             return
         if not arm.wait_for_joint_state(timeout_sec=10.0):
@@ -213,10 +245,14 @@ class MultiPlannerDemo(Node):
         results = []
 
         for i, planner in enumerate(planners):
+            self._wait_for_trigger(
+                f'>>> [대기] [{i+1}/{len(planners)}] {planner["id"]} '
+                '계획+실행 신호를 기다리는 중...'
+            )
             self.get_logger().info(f'\n--- 플래너: {planner["id"]} ---')
             self.get_logger().info(f'  설명: {planner["desc"]}')
 
-            # home으로 초기화
+            # home으로 초기화 (빠른 RRTConnect 사용, 비교 대상이 아니므로 경로 시각화 생략)
             arm.planner_id = 'RRTConnect'
             arm.go_to_named_target('home')
             self._spin_sleep(1.0)
@@ -279,6 +315,7 @@ class MultiPlannerDemo(Node):
             'RViz: /planner_paths MarkerArray로 경로 비교 확인')
 
         # 최종 복귀
+        self._wait_for_trigger('>>> [대기] home 복귀 신호를 기다리는 중...')
         arm.planner_id = 'RRTConnect'
         arm.go_to_named_target('home')
         self._spin_sleep(1.0)

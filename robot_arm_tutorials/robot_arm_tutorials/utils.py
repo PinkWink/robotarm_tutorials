@@ -539,6 +539,54 @@ class MoveGroupHelper:
         success, _ = self._send_move_group_goal(req, plan_only=False)
         return success
 
+    def plan_to_pose_goal_with_constraints(self, pose: Pose,
+                                            path_constraints: Constraints,
+                                            end_effector_link: str = '') -> Tuple[bool, Optional[RobotTrajectory]]:
+        """경로 제약조건을 포함한 끝단 자세로의 계획만 수행 (실행 안 함)"""
+        if not end_effector_link:
+            end_effector_link = self.END_EFFECTOR_LINK
+
+        req = self._build_motion_plan_request()
+        req.path_constraints = path_constraints
+        req.allowed_planning_time = max(self.planning_time, 15.0)
+        req.num_planning_attempts = max(self.num_planning_attempts, 10)
+
+        constraints = Constraints()
+
+        position_constraint = PositionConstraint()
+        position_constraint.header.frame_id = self.REFERENCE_FRAME
+        position_constraint.link_name = end_effector_link
+        position_constraint.target_point_offset = Vector3(x=0.0, y=0.0, z=0.0)
+
+        bounding_volume = BoundingVolume()
+        sphere = SolidPrimitive()
+        sphere.type = SolidPrimitive.SPHERE
+        sphere.dimensions = [0.01]
+        bounding_volume.primitives.append(sphere)
+
+        sphere_pose = Pose()
+        sphere_pose.position = copy.deepcopy(pose.position)
+        sphere_pose.orientation = Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
+        bounding_volume.primitive_poses.append(sphere_pose)
+
+        position_constraint.constraint_region = bounding_volume
+        position_constraint.weight = 1.0
+        constraints.position_constraints.append(position_constraint)
+
+        orientation_constraint = OrientationConstraint()
+        orientation_constraint.header.frame_id = self.REFERENCE_FRAME
+        orientation_constraint.link_name = end_effector_link
+        orientation_constraint.orientation = copy.deepcopy(pose.orientation)
+        orientation_constraint.absolute_x_axis_tolerance = 0.01
+        orientation_constraint.absolute_y_axis_tolerance = 0.01
+        orientation_constraint.absolute_z_axis_tolerance = 0.01
+        orientation_constraint.weight = 1.0
+        constraints.orientation_constraints.append(orientation_constraint)
+
+        req.goal_constraints.append(constraints)
+
+        return self._send_move_group_goal(req, plan_only=True)
+
     # ----------------------------------------------------------
     #  Cartesian 경로 계획
     # ----------------------------------------------------------
