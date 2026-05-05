@@ -22,6 +22,9 @@ __pycache__/
 build/
 dist/
 
+# Jupyter
+.ipynb_checkpoints/
+
 # ROS2 워크스페이스 산출물 (src 하위에 들어올 일이 있는 경우)
 install/
 log/
