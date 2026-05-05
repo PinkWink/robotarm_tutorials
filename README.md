@@ -9,6 +9,10 @@
 | `robot_arm_description` | URDF/Xacro 로봇 모델, RViz 설정 |
 | `robot_arm_moveit_config` | MoveIt2 설정 (SRDF, 컨트롤러, 플래너, Servo 등) |
 | `robot_arm_tutorials` | 15개 단계별 Python 예제 코드 |
+| `franka_description` | (보너스) Franka FR3 URDF/Mesh — minimal trim |
+| `franka_fr3_moveit_config` | (보너스) Franka FR3 MoveIt2 설정 — fake hardware 데모용 |
+| `franka_gazebo_bringup` | (보너스) FR3 Gazebo 컨트롤러 yaml 호스팅 (슬림 재구성) |
+| `franka_tutorials` | (보너스) FR3 Gazebo+MoveIt 통합 launch와 D435 부착 데모 |
 
 ## 사전 요구사항
 
@@ -398,6 +402,44 @@ sudo apt install \
   ros-jazzy-tf2-ros
 ```
 
+## Franka FR3 데모 (보너스)
+
+`robot_arm_*` 패키지와 별개로, 3 kg payload급 협동로봇 **Franka Research 3 (FR3)** 시뮬레이션 데모를 함께 배포합니다. 세 가지 시나리오를 지원합니다.
+
+### 실행 옵션
+
+```bash
+# 워크스페이스 빌드 및 source 후
+
+# (1) 가벼운 mock_components 기반 — MoveIt + RViz만, Gazebo 없음
+ros2 launch franka_fr3_moveit_config moveit.launch.py \
+  robot_ip:=dont-care use_fake_hardware:=true
+
+# (2) Gazebo Sim + ros2_control + MoveIt + RViz
+ros2 launch franka_tutorials franka_gazebo_moveit.launch.py
+
+# (3) 위 + Intel RealSense D435 카메라 부착 (RGB 영상이 ROS 토픽으로)
+ros2 launch franka_tutorials franka_with_d435.launch.py
+```
+
+(3)을 실행하면 `/d435/color/image_raw`, `/d435/color/camera_info` 토픽이 생기고, RViz에 Image 디스플레이를 추가하면 시뮬 카메라 영상이 보입니다. 인터랙티브 마커로 팔을 움직이면 카메라 시점도 같이 움직입니다.
+
+추가 apt 의존성:
+- (2), (3)을 쓰려면 `ros-jazzy-ros-gz`, `ros-jazzy-gz-ros2-control`, `ros-jazzy-sdformat-urdf`이 필요 (위 "Gazebo Harmonic 시뮬레이션" 섹션 참조).
+- `libfranka` / `franka_hardware` 등 실로봇 관련 패키지는 본 배포 범위 밖입니다.
+
+### 상세 문서
+
+- [`docs/franka_packages_porting.md`](docs/franka_packages_porting.md) — 원본 `franka_ros2`에서 본 저장소로 옮기며 어떤 파일을 잘라냈고 어떤 launch/yaml을 수정했는지 정리
+- [`docs/franka_d435_tf_demo.md`](docs/franka_d435_tf_demo.md) — `franka_description` / `franka_fr3_moveit_config`를 한 줄도 수정하지 않고 D435 카메라를 wrapper xacro + TF로 *위에 얹는* 방법, 같은 패턴으로 다른 센서를 추가하는 일반화된 절차
+
+### 출처
+
+- 원본: [frankaemika/franka_ros2](https://github.com/frankaemika/franka_ros2) `jazzy` 브랜치 (= v3.3.0, Apache-2.0)
+- 본 배포는 **튜토리얼/시뮬레이션 한정 minimal 버전**으로 패키지마다 슬림 작업이 들어갔습니다 (자세한 내역은 위 포팅 노트 참조).
+- 각 Franka 패키지 디렉토리에 원본 `LICENSE`/`NOTICE` 보존.
+
 ## License
 
-Apache-2.0
+본 저장소의 코드(`robot_arm_*`, `franka_tutorials`)는 별도 명시가 없는 한 Apache-2.0.
+`franka_description`, `franka_fr3_moveit_config`, `franka_gazebo_bringup`은 Franka Robotics GmbH의 Apache-2.0 코드를 일부 발췌·수정한 것이며 각 패키지 디렉토리 내 `LICENSE`/`NOTICE`를 따릅니다.

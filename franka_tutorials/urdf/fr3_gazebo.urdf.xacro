@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+  Wrapper that includes franka_description/robots/fr3/fr3.urdf.xacro
+  WITHOUT modifying the upstream file. Adds Gazebo-only adjustments
+  needed for a standalone simulation:
+
+  - Disable gravity on FR3 arm/hand/finger links. The default
+    joint_trajectory_controller (effort + PID) does not implement
+    explicit gravity compensation; without this override the arm would
+    droop on the later joints. Mirrors franka_gazebo_bringup's
+    gravity_overrides.xacro (no link names changed).
+
+  Pass-through xacro arguments are forwarded by the launch file:
+    hand:=true ee_id:=franka_hand ros2_control:=true
+    gazebo:=true gazebo_effort:=true
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="fr3">
+
+  <xacro:include filename="$(find franka_description)/robots/fr3/fr3.urdf.xacro"/>
+
+  <gazebo reference="fr3_link0"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link1"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link2"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link3"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link4"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link5"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link6"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link7"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_link8"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_hand"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_leftfinger"><gravity>false</gravity></gazebo>
+  <gazebo reference="fr3_rightfinger"><gravity>false</gravity></gazebo>
+
+</robot>
